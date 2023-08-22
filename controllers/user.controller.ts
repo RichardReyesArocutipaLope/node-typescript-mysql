@@ -1,30 +1,34 @@
 import { Request, Response } from "express";
+import { User } from "../models/user.model";
 
-export const getUsers = (req: Request, res: Response) => {
-    return res.json({
-        msg: 'Get Users'
-    })
+export const getUsers = async (req: Request, res: Response) => {
+    const users = await User.findAll();
+    return res.json({ users })
 }
 
-
-export const getUser = (req: Request, res: Response) => {
-
+export const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
-
-    res.json({
-        msg: 'Get User',
-        id
-    })
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ msg: 'No existe' })
+    return res.json({ user })
 }
 
 export const createUser = (req: Request, res: Response) => {
 
-    // const { nombre } = req.body;
-    console.log(req.body)
+    const { body } = req;
+
+    try {
+        // User
+    } catch (error) {
+        return res.status(500).json({
+            msg: 'Hable con el administrador'
+        })
+    }
+
 
     res.json({
         msg: 'Create user',
-        // nombre
+        body
     })
 }
 
