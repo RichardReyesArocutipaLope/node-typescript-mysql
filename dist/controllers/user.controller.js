@@ -67,12 +67,14 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.updateUser = updateUser;
-const deleteUser = (req, res) => {
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    res.json({
-        msg: 'Delete User',
-        id
-    });
-};
+    const user = yield user_model_1.User.findByPk(id);
+    if (!user)
+        return res.status(404).json({ msg: 'No existe el usuario' });
+    // await user.destroy();  // ELIMINACION FISICA
+    yield user.update({ state: false }); // ELIMINACION LOGICA
+    res.json({ user });
+});
 exports.deleteUser = deleteUser;
 //# sourceMappingURL=user.controller.js.map

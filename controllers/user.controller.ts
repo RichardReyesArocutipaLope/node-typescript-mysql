@@ -56,12 +56,15 @@ export const updateUser = async (req: Request, res: Response) => {
 
 }
 
-export const deleteUser = (req: Request, res: Response) => {
-
+export const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    res.json({
-        msg: 'Delete User',
-        id
-    })
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ msg: 'No existe el usuario' })
+
+    // await user.destroy();  // ELIMINACION FISICA
+
+    await user.update({ state: false }) // ELIMINACION LOGICA
+
+    res.json({ user })
 }
