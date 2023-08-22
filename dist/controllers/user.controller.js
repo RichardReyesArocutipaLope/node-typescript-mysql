@@ -24,31 +24,48 @@ const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json({ user });
 });
 exports.getUser = getUser;
-const createUser = (req, res) => {
+const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // TODO : obligar al usuario a que envie el name y el email
+    // TODO : validar de que el email sea unico (modificar tambien en la tabla de postgresql)
     const { body } = req;
     try {
-        // User
+        const user = new user_model_1.User(body);
+        yield user.save();
+        res.json({ user });
     }
     catch (error) {
+        console.log(error);
         return res.status(500).json({
             msg: 'Hable con el administrador'
         });
     }
-    res.json({
-        msg: 'Create user',
-        body
-    });
-};
+});
 exports.createUser = createUser;
-const updateUser = (req, res) => {
+const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { body } = req;
-    res.json({
-        msg: 'Update User',
-        body,
-        id
-    });
-};
+    const { email } = body;
+    try {
+        const user = yield user_model_1.User.findByPk(id);
+        if (!user)
+            return res.status(404).json({ msg: 'No existe el usuario' });
+        if (email) {
+            const existsEmail = yield user_model_1.User.findOne({ where: { email } });
+            if (existsEmail)
+                return res.status(400).json({
+                    msg: `Ya existe el email ${body.email}`
+                });
+        }
+        yield user.update(body);
+        res.json({ user });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            msg: 'Hable con el administrador'
+        });
+    }
+});
 exports.updateUser = updateUser;
 const deleteUser = (req, res) => {
     const { id } = req.params;
